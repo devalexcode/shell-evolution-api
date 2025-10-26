@@ -5,15 +5,17 @@ services:
     restart: always
     depends_on:
       - redis
-      - postgres
     ports:
       - ${EVOLUTION_API_PORT}:8080
     volumes:
       - evolution_instances:/evolution/instances
+      - ${GCS_CREDENTIALS_PATH}:/app/gcp-credentials.json:ro
     networks:
       - evolution-net
     env_file:
       - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-credentials.json
     expose:
       - 8080
 
@@ -30,30 +32,9 @@ services:
     ports:
       - ${REDIS_PORT}:6379
 
-  postgres:
-    container_name: postgres
-    image: postgres:15
-    networks:
-      - evolution-net
-    command:
-      ["postgres", "-c", "max_connections=1000", "-c", "listen_addresses=*"]
-    restart: always
-    ports:
-      - ${POSTGRESS_PORT}:5432
-    environment:
-      - POSTGRES_USER=${POSTGRESS_USER}
-      - POSTGRES_PASSWORD=${POSTGRESS_PASS}
-      - POSTGRES_DB=evolution
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    expose:
-      - 5432
-
 volumes:
   evolution_instances:
   evolution_redis:
-  postgres_data:
 
 networks:
   evolution-net:
