@@ -1,7 +1,7 @@
 services:
   evolution_api:
     container_name: evolution_api
-    image: atendai/evolution-api:latest
+    image: evoapicloud/evolution-api:latest
     restart: always
     depends_on:
       - redis
